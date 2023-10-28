@@ -1,12 +1,17 @@
 version: '3.8'
 services:
   dragonfly:
+    restart: unless-stopped
     image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
     ulimits:
       memlock: -1
+    command:
+      - '--save_schedule=*:*'
     volumes:
       - ./data/dragonflydata:/data
   moe-counter:
+    restart: unless-stopped
+    # image: 'totoroterror/moe-counter:latest'
     build: .
     environment:
       - DATABASE_URL=redis://dragonfly:6379

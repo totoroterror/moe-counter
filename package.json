@@ -1,7 +1,7 @@
 {
   "name": "moe-counter",
   "description": "Moe Counter rewritten in TypeScript",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "author": "totoroterror",
   "scripts": {
