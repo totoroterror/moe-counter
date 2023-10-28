@@ -4,4 +4,5 @@ export interface IRequestParams {
 
 export interface IRequestQuery {
   theme: string
+  format: string
 }

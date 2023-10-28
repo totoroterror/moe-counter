@@ -6,6 +6,7 @@ import { createClient } from 'redis'
 import config from './config'
 import type { IRequestParams, IRequestQuery } from './types'
 import { themes, getImage } from './utilities/themify'
+import { SUPPORTED_FORMATS } from './utilities/constants'
 
 const client = createClient({
   url: config.database.url,
@@ -19,52 +20,58 @@ const logger = Logger.create('index', Color.Gray)
 
 fastify.get('/', async (request, reply) => {
   reply.send({
-    user_image_url: '/@{user}{?theme}',
-    user_json_url: '/@{user}.json',
-    user_txt_url: '/@{user}.txt',
+    user_image_url: '/@{user}{?theme,format}',
     themes_url: '/themes',
+    formats_url: '/formats',
   })
 })
 
 fastify.get('/@:name', async (request, reply) => {
   const params = request.params as IRequestParams
-  const { theme = 'moebooru' } = request.query as IRequestQuery
+  let { theme = 'moebooru', format = 'svg' } = request.query as IRequestQuery
 
   const counter = await client.incr(params.name)
 
-  reply.headers({
-    'content-type': 'image/svg+xml',
-    'cache-control': params.name === 'demo' ? 'max-age=31536000' : 'max-age=0, no-cache, no-store, must-revalidate',
-  }).send(
-    getImage({
-      count: counter,
-      theme,
-      length: params.name === 'demo' ? 10 : 7,
-    }),
-  )
-})
+  if (!SUPPORTED_FORMATS.includes(format)) {
+    format = 'svg'
+  }
 
-fastify.get('/@:name.json', async (request, reply) => {
-  const params = request.params as IRequestParams
+  switch (format) {
+  case 'svg': {
+    reply.headers({
+      'content-type': 'image/svg+xml',
+      'cache-control': params.name === 'demo' ? 'max-age=31536000' : 'max-age=0, no-cache, no-store, must-revalidate',
+    }).send(
+      getImage({
+        count: counter,
+        theme,
+        length: params.name === 'demo' ? 10 : 7,
+      }),
+    )
 
-  const counter = await client.incr(params.name)
+    break
+  }
+  case 'txt': {
+    reply.headers({
+      'content-type': 'text/plain',
+    }).send(counter.toString())
 
-  reply.send({
-    name: params.name,
-    counter,
-  })
-})
+    break
+  }
+  case 'json': {
+    reply.send({ name: params.name, counter })
 
-fastify.get('/@:name.txt', async (request, reply) => {
-  const params = request.params as IRequestParams
-
-  const counter = await client.incr(params.name)
-
-  reply.send(counter)
+    break
+  }
+  }
 })
 
 fastify.get('/themes', async (request, reply) => {
   reply.send(Object.keys(themes))
+})
+
+fastify.get('/formats', async (request, reply) => {
+  reply.send(SUPPORTED_FORMATS)
 })
 
 const init = async () => {
