@@ -19,8 +19,9 @@ const logger = Logger.create('index', Color.Gray)
 
 fastify.get('/', async (request, reply) => {
   reply.send({
-    user_url: '/@{user}{?theme}',
-    user_statistics_url: '/raw/@{user}',
+    user_image_url: '/@{user}{?theme}',
+    user_json_url: '/@{user}.json',
+    user_txt_url: '/@{user}.txt',
     themes_url: '/themes',
   })
 })
@@ -43,7 +44,7 @@ fastify.get('/@:name', async (request, reply) => {
   )
 })
 
-fastify.get('/raw/@:name', async (request, reply) => {
+fastify.get('/@:name.json', async (request, reply) => {
   const params = request.params as IRequestParams
 
   const counter = await client.incr(params.name)
@@ -52,6 +53,14 @@ fastify.get('/raw/@:name', async (request, reply) => {
     name: params.name,
     counter,
   })
+})
+
+fastify.get('/@:name.txt', async (request, reply) => {
+  const params = request.params as IRequestParams
+
+  const counter = await client.incr(params.name)
+
+  reply.send(counter)
 })
 
 fastify.get('/themes', async (request, reply) => {
