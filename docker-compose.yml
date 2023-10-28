@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  dragonfly:
+    image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
+    ulimits:
+      memlock: -1
+    volumes:
+      - ./data/dragonflydata:/data
+  moe-counter:
+    build: .
+    environment:
+      - DATABASE_URL=redis://dragonfly:6379
+      - WEB_HOSTNAME=0.0.0.0
+      - WEB_PORT=3000
+    ports:
+      - '127.0.0.1:3000:3000'
+volumes:
+  dragonflydata:

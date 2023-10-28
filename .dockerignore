@@ -1,0 +1,6 @@
+**/.git
+.husky
+dist
+data
+node_modules
+commitlint.config.js
