@@ -10,6 +10,8 @@ This project was made for node:20-alpine, however it can be used with almost any
 
 Demo is available on [count.akame.moe](https://count.akame.moe)
 
+![Counter](https://count.akame.moe/@demo)
+
 ## Building docker image
 
 1. Make sure that docker is installed
