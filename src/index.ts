@@ -12,7 +12,7 @@ const client = createClient({
 })
 
 const fastify = Fastify({
-  logger: false, // config.package.mode === 'development',
+  logger: config.package.mode === 'development',
 })
 
 const logger = Logger.create('index', Color.Gray)
