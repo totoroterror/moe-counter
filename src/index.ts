@@ -12,14 +12,14 @@ const client = createClient({
 })
 
 const fastify = Fastify({
-  logger: config.package.mode === 'development',
+  logger: false, // config.package.mode === 'development',
 })
 
 const logger = Logger.create('index', Color.Gray)
 
 fastify.get('/', async (request, reply) => {
   reply.send({
-    user_url: '/@{user}{&theme}',
+    user_url: '/@{user}{?theme}',
     user_statistics_url: '/raw/@{user}',
     themes_url: '/themes',
   })
